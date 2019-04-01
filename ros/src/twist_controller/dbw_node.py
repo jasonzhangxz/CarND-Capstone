@@ -70,6 +70,14 @@ class DBWNode(object):
         rospy.Subscriber('/vehicle/twist_cmd',TwistStamped,self.twist_cb)
         rospy.Subscriber('/vehicle/current_velocity',TwistStamped,self.velocity_cb)
 
+        self.current_vel = None
+        self.linear_vel = None
+        self.angular_vel = None
+        self.dbw_enabled = None
+        self.steering = 0
+        self.brake = 0
+        self.throttle = 0
+
         self.loop()
 
     def loop(self):
