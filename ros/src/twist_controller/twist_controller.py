@@ -28,12 +28,12 @@ class Controller(object):
         ts = 0.02 #sample time
         self.vel_lpf = LowPassFilter(tau,ts)
 
-        self.vehicle_mass = vehicle_mass,
-        self.fuel_capacity = fuel_capacity,
-        self.brake_deadband = brake_deadband,
-        self.decel_limit = decel_limit,
-        self.accel_limit = accel_limit,
-        self.wheel_radius = wheel_radius,
+        self.vehicle_mass = vehicle_mass
+        self.fuel_capacity = fuel_capacity
+        self.brake_deadband = brake_deadband
+        self.decel_limit = decel_limit
+        self.accel_limit = accel_limit
+        self.wheel_radius = wheel_radius
 
         self.last_time = rospy.get_time()
 
@@ -66,6 +66,7 @@ class Controller(object):
         elif throttle < 0.1 and vel_error < 0:
             throttle = 0
             decel = max(vel_error,self.decel_limit)
+
             brake = abs(decel)*self.vehicle_mass*self.wheel_radius
 
         return throttle,brake,steering
