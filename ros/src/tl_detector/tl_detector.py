@@ -167,7 +167,7 @@ class TLDetector(object):
 
 
         if closest_light:
-            if diff > 70 :  # Try to decrease the load of classifying traffic lights
+            if diff > 55 :  # Try to decrease the load of classifying traffic lights
                 return line_wp_idx, TrafficLight.UNKNOWN
             else:  # only classify when getting close
                 state = self.get_light_state(closest_light)

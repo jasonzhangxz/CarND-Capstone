@@ -1,33 +1,11 @@
-
 from styx_msgs.msg import TrafficLight
-import tensorflow as tf
 import numpy as np
-import datetime
+import cv2
 
 class TLClassifier(object):
     def __init__(self):
-
-        # PATH_TO_GRAPH = r'light_classification/frozen_inference_graph.pb'
-        PATH_TO_GRAPH = r'light_classification/models/ssd_sim/frozen_inference_graph.pb'
-
-
-        self.graph = tf.Graph()
-        self.threshold = .5
-
-        with self.graph.as_default():
-            od_graph_def = tf.GraphDef()
-            with tf.gfile.GFile(PATH_TO_GRAPH, 'rb') as fid:
-                od_graph_def.ParseFromString(fid.read())
-                tf.import_graph_def(od_graph_def, name='')
-
-            self.image_tensor = self.graph.get_tensor_by_name('image_tensor:0')
-            self.boxes = self.graph.get_tensor_by_name('detection_boxes:0')
-            self.scores = self.graph.get_tensor_by_name('detection_scores:0')
-            self.classes = self.graph.get_tensor_by_name('detection_classes:0')
-            self.num_detections = self.graph.get_tensor_by_name(
-                'num_detections:0')
-
-        self.sess = tf.Session(graph=self.graph)
+        #TODO load classifier
+        pass
 
     def get_classification(self, image):
         """Determines the color of the traffic light in the image
@@ -36,32 +14,38 @@ class TLClassifier(object):
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
-        with self.graph.as_default():
-            img_expand = np.expand_dims(image, axis=0)
-            start = datetime.datetime.now()
-            (boxes, scores, classes, num_detections) = self.sess.run(
-                [self.boxes, self.scores, self.classes, self.num_detections],
-                feed_dict={self.image_tensor: img_expand})
-            end = datetime.datetime.now()
-            c = end - start
-            print(c.total_seconds())
+        #TODO  implement yellow and green and compare areas
+        state = TrafficLight.UNKNOWN
 
-        boxes = np.squeeze(boxes)
-        scores = np.squeeze(scores)
-        classes = np.squeeze(classes).astype(np.int32)
+        red = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-        print('SCORES: ', scores[0])
-        print('CLASSES: ', classes[0])
 
-        if scores[0] > self.threshold:
-            if classes[0] == 1:
-                print('GREEN')
-                return TrafficLight.GREEN
-            elif classes[0] == 2:
-                print('RED')
-                return TrafficLight.RED
-            elif classes[0] == 3:
-                print('YELLOW')
-                return TrafficLight.YELLOW
+        lower_red = np.array([0,50,50])
+        upper_red = np.array([10,255,255])
+        red1 = cv2.inRange(red, lower_red , upper_red)
 
-        return TrafficLight.UNKNOWN
+
+        lower_red = np.array([170,50,50])
+        upper_red = np.array([180,255,255])
+        red2 = cv2.inRange(red, lower_red , upper_red)
+
+        converted_img = cv2.addWeighted(red1, 1.0, red2, 1.0, 0.0)
+
+        blur_img = cv2.GaussianBlur(converted_img,(15,15),0)
+
+
+        #edges = cv2.Canny(imgray,thresh,thresh*3)
+
+        circles = cv2.HoughCircles(blur_img,cv2.HOUGH_GRADIENT,0.5,41, param1=70,param2=30,minRadius=5,maxRadius=150)
+
+        found = False
+        if circles is not None:
+            state = TrafficLight.RED
+        #    for i in circles[0,:3]:
+        #        cv2.circle(output,(i[0],i[1]),maxRadius,(255, 100, 100),2)
+
+
+        #need to include more image, so ignore other colors
+        #green may be trees.  Just look for red lights
+        #if red_area > 40:
+        return state
