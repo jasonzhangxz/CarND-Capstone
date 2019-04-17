@@ -81,8 +81,8 @@ class TLDetector(object):
         self.camera_image = msg
         light_wp, state = self.process_traffic_lights()
 
-        print("light waypoint:", light_wp)
-        print("light state: ", state)
+        # print("light waypoint:", light_wp)
+        # print("light state: ", state)
 
         '''
         Publish upcoming red lights at camera frequency.
