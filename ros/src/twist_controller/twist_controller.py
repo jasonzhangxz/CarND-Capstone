@@ -62,7 +62,7 @@ class Controller(object):
 
         if linear_vel == 0.0 and current_vel < 0.1:
             throttle = 0
-            brake = 700 #N*M --to hold the car in place when stopped in Drive mode
+            brake = 750 #N*M --to hold the car in place when stopped in Drive mode
         elif throttle < 0.1 and vel_error < 0:
             throttle = 0
             decel = max(vel_error,self.decel_limit)
