@@ -14,38 +14,52 @@ class TLClassifier(object):
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
-        #TODO  implement yellow and green and compare areas
+        #set the default state as UNKNOWN
         state = TrafficLight.UNKNOWN
 
-        red = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        img_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 
         lower_red = np.array([0,50,50])
         upper_red = np.array([10,255,255])
-        red1 = cv2.inRange(red, lower_red , upper_red)
-
+        red1 = cv2.inRange(img_hsv, lower_red , upper_red)
 
         lower_red = np.array([170,50,50])
         upper_red = np.array([180,255,255])
-        red2 = cv2.inRange(red, lower_red , upper_red)
+        red2 = cv2.inRange(img_hsv, lower_red , upper_red)
 
-        converted_img = cv2.addWeighted(red1, 1.0, red2, 1.0, 0.0)
-
-        blur_img = cv2.GaussianBlur(converted_img,(15,15),0)
+        red_converted_img = cv2.addWeighted(red1, 1.0, red2, 1.0, 0.0)
 
 
-        #edges = cv2.Canny(imgray,thresh,thresh*3)
+        lower_green = np.array([50,50,50])
+        upper_green = np.array([70,255,255])
+        green_converted_img = cv2.inRange(img_hsv, lower_green, upper_green)
 
-        circles = cv2.HoughCircles(blur_img,cv2.HOUGH_GRADIENT,0.5,41, param1=70,param2=30,minRadius=5,maxRadius=150)
 
-        found = False
-        if circles is not None:
+        lower_yellow = np.array([20,50,50])
+        upper_yellow = np.array([40,255,255])
+        yellow_converted_img = cv2.inRange(img_hsv, lower_yellow, upper_yellow)
+
+
+        red_blur_img = cv2.GaussianBlur(red_converted_img,(15,15),0)
+        green_blur_img = cv2.GaussianBlur(green_converted_img,(15,15),0)
+        yellow_blur_img = cv2.GaussianBlur(yellow_converted_img,(15,15),0)
+
+
+        # Finds circles in a grayscale image using the Hough transform
+        # https://docs.opencv.org/2.4/modules/imgproc/doc/feature_detection.html#houghcircles
+        red_circles = cv2.HoughCircles(red_blur_img,cv2.HOUGH_GRADIENT,0.5,41, param1=70,param2=30,minRadius=5,maxRadius=150)
+        green_circles = cv2.HoughCircles(green_blur_img,cv2.HOUGH_GRADIENT,0.5,41, param1=70,param2=30,minRadius=5,maxRadius=150)
+        yellow_circles = cv2.HoughCircles(yellow_blur_img,cv2.HOUGH_GRADIENT,0.5,41, param1=70,param2=30,minRadius=5,maxRadius=150)
+
+
+        if red_circles is not None:
             state = TrafficLight.RED
-        #    for i in circles[0,:3]:
-        #        cv2.circle(output,(i[0],i[1]),maxRadius,(255, 100, 100),2)
+        elif green_circles is not None:
+            state = TrafficLight.GREEN
+        elif yellow_circles is not None:
+            state = TrafficLight.YELLOW
+        else:
+            state = TrafficLight.UNKNOWN
 
-
-        #need to include more image, so ignore other colors
-        #green may be trees.  Just look for red lights
-        #if red_area > 40:
         return state
