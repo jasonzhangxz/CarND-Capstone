@@ -4,12 +4,14 @@ Here is the a view of the nodes & topics after all implementations.
 
 ![nodeTopicGraph.png](./imgs/nodeTopicGraph.png)
 
+
+
 [Here](./imgs/simulation_video.mov) is a video showing the ego car stops at Red traffic light and starts to move again on Green light.
 
+---
+### Below are the questions and notes I recorded during implementing the whole project.
 
-Below are the questions and notes I recorded during implementing the whole project.
-
-* I meet the same qusetions after i use: sudo apt-get upgrade,the problem is like this:
+* I meet this questions after i use: `sudo apt-get upgrade`:
 Traceback (most recent call last):
   File "/opt/ros/kinetic/bin/catkin_make", line 13, in <module>
     from catkin.terminal_color import disable_ANSI_colors, fmt
