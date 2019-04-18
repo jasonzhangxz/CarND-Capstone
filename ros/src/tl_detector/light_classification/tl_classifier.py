@@ -41,16 +41,16 @@ class TLClassifier(object):
         yellow_converted_img = cv2.inRange(img_hsv, lower_yellow, upper_yellow)
 
 
-        red_blur_img = cv2.GaussianBlur(red_converted_img,(15,15),0)
-        green_blur_img = cv2.GaussianBlur(green_converted_img,(15,15),0)
-        yellow_blur_img = cv2.GaussianBlur(yellow_converted_img,(15,15),0)
+        red_blur_img = cv2.GaussianBlur(red_converted_img,(15,15),cv2.BORDER_DEFAULT)
+        green_blur_img = cv2.GaussianBlur(green_converted_img,(15,15),cv2.BORDER_DEFAULT)
+        yellow_blur_img = cv2.GaussianBlur(yellow_converted_img,(15,15),cv2.BORDER_DEFAULT)
 
 
         # Finds circles in a grayscale image using the Hough transform
         # https://docs.opencv.org/2.4/modules/imgproc/doc/feature_detection.html#houghcircles
-        red_circles = cv2.HoughCircles(red_blur_img,cv2.HOUGH_GRADIENT,0.5,41, param1=70,param2=30,minRadius=5,maxRadius=150)
-        green_circles = cv2.HoughCircles(green_blur_img,cv2.HOUGH_GRADIENT,0.5,41, param1=70,param2=30,minRadius=5,maxRadius=150)
-        yellow_circles = cv2.HoughCircles(yellow_blur_img,cv2.HOUGH_GRADIENT,0.5,41, param1=70,param2=30,minRadius=5,maxRadius=150)
+        red_circles = cv2.HoughCircles(red_blur_img,cv2.HOUGH_GRADIENT,1,40, param1=70,param2=30,minRadius=10,maxRadius=150)
+        green_circles = cv2.HoughCircles(green_blur_img,cv2.HOUGH_GRADIENT,1,40, param1=70,param2=30,minRadius=10,maxRadius=150)
+        yellow_circles = cv2.HoughCircles(yellow_blur_img,cv2.HOUGH_GRADIENT,1,40, param1=70,param2=30,minRadius=10,maxRadius=150)
 
 
         if red_circles is not None:
